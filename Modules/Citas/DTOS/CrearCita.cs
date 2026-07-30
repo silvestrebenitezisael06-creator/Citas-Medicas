@@ -7,6 +7,7 @@ namespace Citas_Medicas.Modules.Citas.DTOS
 {
     public class CrearCita
     {
+    public int Id { get; set; }
     public required string NombrePaciente { get; set; }
     public required int IdPaciente { get; set; }
     public required string SeguroMedico { get; set; }

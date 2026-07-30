@@ -7,7 +7,7 @@ namespace Citas_Medicas.Modules.Citas.Entities
 {
     public class Cita
     {
-    public Guid Uuid { get; set; }
+    public int Id { get; set; }
     public required string NombrePaciente { get; set; }
     public required int IdPaciente { get; set; }
     public required string SeguroMedico { get; set; }

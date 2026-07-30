@@ -9,49 +9,43 @@ using Citas_Medicas.Modules.Citas.DTOS;
 
 namespace Citas_Medicas.Modules.Citas.Controllers
 {
-    public class CitasController
-    {
     [ApiController]
-    [Route("api/[controller]")]
-        public class CitasControllers : ControllerBase
+    [Route("api/v1/[controller]")]
+        public class CitasController(CitaService citaService) : ControllerBase
         {
-        private readonly CitaService _citaService;
-
-        public CitasControllers(CitaService citaService)
-        {
-            _citaService = citaService;
-        }
+        private readonly CitaService _citaService = citaService;
 
         [HttpGet]
-        public IActionResult ObtenerTodas()
+        public IActionResult FindAll()
         {
-            return Ok(_citaService.ObtenerTodas());
+            return Ok(_citaService.FindAll());
         }
 
-        [HttpGet("{uuid}")]
-        public IActionResult ObtenerPorUuid(Guid uuid)
+        [HttpGet("{id}")]
+        public IActionResult FindById(int id)
         {
-        var cita = _citaService.ObtenerPorUuid(uuid);
+            var cita = _citaService.FindById(id);
 
         if (cita == null)
         {
-        return NotFound();
+            return NotFound();
         }
 
-        return Ok(cita);
+            return Ok(cita);
         }
+        
         [HttpPost]
-        public IActionResult Crear(CrearCita dto)
+        public IActionResult Create(CrearCita dto)
         {
         var cita = _citaService.Crear(dto);
 
         return Created("", cita);
         }
 
-        [HttpPatch("{uuid}")]
-        public IActionResult Actualizar(Guid uuid, ActualizarCita dto)
+        [HttpPatch("{id}")]
+        public IActionResult Update(int id, ActualizarCita dto)
         {
-        var cita = _citaService.Actualizar(uuid, dto);
+        var cita = _citaService.Update(id, dto);
 
         if (cita == null)
         {
@@ -61,18 +55,17 @@ namespace Citas_Medicas.Modules.Citas.Controllers
         return Ok(cita);
         }
 
-        [HttpDelete("{uuid}")]
-        public IActionResult Eliminar(Guid uuid)
-            {
-            bool eliminado = _citaService.Eliminar(uuid);
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+        bool eliminado = _citaService.Delete(id);
 
-            if (!eliminado)
-            {
-            return NotFound();
-            }
-
-            return Ok();
-            }
+        if (!eliminado)
+        {
+        return NotFound();
         }
+        return Ok();
+        }
+
     }
 }

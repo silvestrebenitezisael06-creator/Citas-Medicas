@@ -4,50 +4,41 @@ using System.Linq;
 using System.Threading.Tasks;
 using Citas_Medicas.Modules.Citas.Entities;
 using Citas_Medicas.Modules.Citas.DTOS;
+using Citas_Medicas.Modules.Citas.Repositories;
 
 namespace Citas_Medicas.Modules.Citas.Services
 {
-    public class CitaService
+    public class CitaService(CitasRepository citasrepository)
     {
-    private readonly List<Cita> _citas = new();
-    public List<Cita> ObtenerTodas()
+    private readonly CitasRepository _citasrepository = citasrepository;
+    public List<Cita> FindAll()
         {
-            return _citas;
+            return _citasrepository.FindAll();
         }
-        public Cita? ObtenerPorUuid(Guid uuid)
+        public Cita? FindById(int id)
         {
-            return _citas.FirstOrDefault(c => c.Uuid == uuid);
+            Cita? cita= _citasrepository.FindOne(id);
+            return cita;
         }
         public Cita Crear(CrearCita dto)
         {
-            Cita nuevaCita = new Cita
+            Cita cita = new()
             {
-                Uuid = Guid.NewGuid(),
                 NombrePaciente = dto.NombrePaciente,
                 IdPaciente = dto.IdPaciente,
                 SeguroMedico = dto.SeguroMedico,
                 Medico = dto.Medico,
-                FechaHora = dto.FechaHora,
+                FechaHora = DateTime.SpecifyKind(dto.FechaHora, DateTimeKind.Utc),
                 NumeroTelefono = dto.NumeroTelefono,
                 NumeroCita = dto.NumeroCita
             };
 
-            _citas.Add(nuevaCita);
-
-            return nuevaCita;
+            return _citasrepository.Create(cita);
         }
-        public bool Eliminar(Guid uuid)
-        {
-            Cita? cita = ObtenerPorUuid(uuid);
-            if (cita == null)
-                return false;
 
-            _citas.Remove(cita);
-            return true;
-        }
-        public Cita? Actualizar(Guid uuid, ActualizarCita dto)
+        public Cita? Update(int id, ActualizarCita dto)
         {
-            Cita? cita = ObtenerPorUuid(uuid);
+            Cita? cita = _citasrepository.FindOne(id);
 
             if (cita == null)
             {
@@ -67,7 +58,7 @@ namespace Citas_Medicas.Modules.Citas.Services
         cita.Medico = dto.Medico;
 
         if (dto.FechaHora.HasValue)
-        cita.FechaHora = dto.FechaHora.Value;
+        cita.FechaHora = DateTime.SpecifyKind(dto.FechaHora.Value, DateTimeKind.Utc);
 
         if (dto.NumeroTelefono != null)
         cita.NumeroTelefono = dto.NumeroTelefono;
@@ -75,9 +66,17 @@ namespace Citas_Medicas.Modules.Citas.Services
         if (dto.NumeroCita != null)
         cita.NumeroCita = dto.NumeroCita;
 
-            return cita;
+            return _citasrepository.Update(cita);
+        }
+
+        public bool Delete(int id)
+        {
+            Cita? cita = FindById(id);
+            if (cita == null)
+                return false;
+
+            _citasrepository.Delete(cita.Id);
+            return true;
         }
     }
-
-        
 }
