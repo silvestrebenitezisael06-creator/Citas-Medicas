@@ -14,18 +14,25 @@ namespace Citas_Medicas.Modules.Citas.Repositories
     private readonly AppDbContext _context = appDBContext;
     public List<Cita> FindAll()
         {
-            return _context.Citas.ToList();
+            return _context.Citas
+            .Include(c => c.Medico)
+            .ToList();
         }
     
     public Cita? FindOne(int id)
         {
-            return _context.Citas.FirstOrDefault(c => c.Id == id);  
+            Cita? cita = _context.Citas
+            .Include(c => c.Medico)
+            .FirstOrDefault(c => c.Id == id);
+            return cita;
         }
         public Cita Create(Cita cita) {
         _context.Citas.Add(cita);
         _context.SaveChanges();
 
-        return cita;
+        return _context.Citas
+        .Include(c => c.Medico)
+        .First(c => c.Id == cita.Id);
         }
         public bool Delete(int id) {
         Cita? cita = FindOne(id);

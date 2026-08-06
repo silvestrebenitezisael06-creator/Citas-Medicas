@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Citas_Medicas.Modules.Citas.Services;
 using Citas_Medicas.Modules.Citas.DTOS;
+using Citas_Medicas.Modules.Citas.Entities;
+using Citas_Medicas.Modules.Citas.Services;
+
 
 
 namespace Citas_Medicas.Modules.Citas.Controllers

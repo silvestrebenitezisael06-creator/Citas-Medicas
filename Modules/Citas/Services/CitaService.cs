@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Citas_Medicas.Modules.Citas.Entities;
 using Citas_Medicas.Modules.Citas.DTOS;
 using Citas_Medicas.Modules.Citas.Repositories;
+using Citas_Medicas.Modules.Medicos.DTOS;
 
 namespace Citas_Medicas.Modules.Citas.Services
 {
@@ -20,20 +21,41 @@ namespace Citas_Medicas.Modules.Citas.Services
             Cita? cita= _citasrepository.FindOne(id);
             return cita;
         }
-        public Cita Crear(CrearCita dto)
+        public CitaResponse Crear(CrearCita dto)
         {
-            Cita cita = new()
+            Cita nuevaCita = new Cita
             {
                 NombrePaciente = dto.NombrePaciente,
                 IdPaciente = dto.IdPaciente,
                 SeguroMedico = dto.SeguroMedico,
-                Medico = dto.Medico,
+                MedicoId = dto.MedicoId,
                 FechaHora = DateTime.SpecifyKind(dto.FechaHora, DateTimeKind.Utc),
                 NumeroTelefono = dto.NumeroTelefono,
                 NumeroCita = dto.NumeroCita
             };
+            nuevaCita = _citasrepository.Create(nuevaCita);
+            return new CitaResponse
+            {
+                Id = nuevaCita.Id,
+                NombrePaciente = nuevaCita.NombrePaciente,
+                IdPaciente = nuevaCita.IdPaciente,
+                SeguroMedico = nuevaCita.SeguroMedico,
+                MedicoId = nuevaCita.MedicoId,
+                FechaHora = nuevaCita.FechaHora,
+                NumeroTelefono = nuevaCita.NumeroTelefono,
+                NumeroCita = nuevaCita.NumeroCita,
 
-            return _citasrepository.Create(cita);
+            Medico = new MedicoResponse
+            {
+                Id = nuevaCita.Medico.Id,
+                NombreMedico = nuevaCita.Medico.NombreMedico,
+                Especialidad = nuevaCita.Medico.Especialidad,
+                NumeroTelefono = nuevaCita.Medico.NumeroTelefono,
+                NumeroConsultorio = nuevaCita.Medico.NumeroConsultorio,
+                HorarioAtencion = nuevaCita.Medico.HorarioAtencion
+            }
+
+            };
         }
 
         public Cita? Update(int id, ActualizarCita dto)
@@ -54,8 +76,8 @@ namespace Citas_Medicas.Modules.Citas.Services
         if (dto.SeguroMedico != null)
         cita.SeguroMedico = dto.SeguroMedico;
 
-        if (dto.Medico != null)
-        cita.Medico = dto.Medico;
+        if (dto.MedicoId.HasValue)
+        cita.MedicoId = dto.MedicoId.Value;
 
         if (dto.FechaHora.HasValue)
         cita.FechaHora = DateTime.SpecifyKind(dto.FechaHora.Value, DateTimeKind.Utc);
